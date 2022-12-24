@@ -254,15 +254,15 @@ public class ListaEnlazada<E> {
         E auxJ = matriz[j];
         E auxJ1 = matriz[j + 1];
         Field field = Utilidades.obtenerAtributo(clazz, atributo);
-        if (field == null){
+        if (field == null) {
             throw new AtributoException();
-        }else{
+        } else {
             field.setAccessible(true);
-            Object a =  field.get(auxJ);
-            Object b =  field.get(auxJ1);
+            Object a = field.get(auxJ);
+            Object b = field.get(auxJ1);
             intercambio(j, matriz, a, b, tipoOrdenacion);
         }
-        
+
     }
 
     private void intercambio(int j, E[] matriz, Object auxJ, Object auxJ1, Integer tipoOrdenacion) {
@@ -297,7 +297,7 @@ public class ListaEnlazada<E> {
             }
         }
     }
-    
+
     public ListaEnlazada<E> order_seleccion(String atributo, Integer tipoOrdenacion) throws Exception {
         Class<E> clazz = null;
         E[] matriz = toArray();
@@ -308,18 +308,18 @@ public class ListaEnlazada<E> {
             Integer i, j, k = 0;
             Integer n = matriz.length;
             E t = null;
-            for (i = 0; i < n -1 ; i++) {
+            for (i = 0; i < n - 1; i++) {
                 k = i;
                 t = matriz[i];
-                for (j = i + 1 ; j < n; j++) {
+                for (j = i + 1; j < n; j++) {
                     E auxj1 = matriz[j];
                     Object[] aux = null;
                     if (isObject) {
                         aux = evaluarCambioObjeto(t, auxj1, j, tipoOrdenacion, clazz, atributo);
                     } else {
-                        aux = evaluarCambioDato(t, auxj1, j, tipoOrdenacion); 
+                        aux = evaluarCambioDato(t, auxj1, j, tipoOrdenacion);
                     }
-                    if(aux[0] != null){
+                    if (aux[0] != null) {
                         t = (E) aux[0];
                         k = (Integer) aux[1];
                     }
@@ -333,26 +333,26 @@ public class ListaEnlazada<E> {
         }
         return this;
     }
-    
-    private Object[] evaluarCambioDato(E auxJ, E auxJ1, Integer j, Integer tipoOrdenacion){
+
+    private Object[] evaluarCambioDato(E auxJ, E auxJ1, Integer j, Integer tipoOrdenacion) {
         return evaluarCambio(auxJ, auxJ1, auxJ1, j, tipoOrdenacion);
     }
-    
-    private Object[] evaluarCambioObjeto(E auxJ, E auxJ1, Integer j, Integer tipoOrdenacion, Class clazz, String atributo) throws AtributoException, Exception{
+
+    private Object[] evaluarCambioObjeto(E auxJ, E auxJ1, Integer j, Integer tipoOrdenacion, Class clazz, String atributo) throws AtributoException, Exception {
         Field field = Utilidades.obtenerAtributo(clazz, atributo);
-        if (field == null){
+        if (field == null) {
             throw new AtributoException();
-        }else{
+        } else {
             field.setAccessible(true);
-            Object a =  field.get(auxJ);
-            Object b =  field.get(auxJ1);
+            Object a = field.get(auxJ);
+            Object b = field.get(auxJ1);
             return evaluarCambio(a, b, auxJ1, j, tipoOrdenacion);
         }
-        
+
     }
-    
-    private Object[] evaluarCambio(Object auxJ, Object auxJ1, E dato, Integer j, Integer tipoOrdenacion){
-        
+
+    private Object[] evaluarCambio(Object auxJ, Object auxJ1, E dato, Integer j, Integer tipoOrdenacion) {
+
         Object[] aux = new Object[2];
         Class clazz = auxJ.getClass();
         if (Utilidades.isNumber(clazz)) {
@@ -384,8 +384,68 @@ public class ListaEnlazada<E> {
         }
         return aux;
     }
+
+    //búsqueda
+    public ListaEnlazada<E> buscar(String atributo, Object dato) throws Exception{
+        Class<E> clazz = null;
+        ListaEnlazada<E> result = new ListaEnlazada<>();
+        if (size > 0) {
+            //opcional pueden ordenar
+            E[] matriz = toArray();
+            clazz = (Class<E>) cabecera.getDato().getClass();
+            Boolean isObject = Utilidades.isObject(clazz);
+
+            for (int i = 0; i < matriz.length; i++) {
+                if (isObject) { //cuando son objetos
+                    Boolean band = evaluarBusquedaObjeto(matriz[i], dato, clazz, atributo);
+                    if(band){
+                        result.insertar(matriz[i]);
+                    }
+                    
+                } else {//cuando son datos primitivos
+                    Boolean band = buscarPosicion(matriz[i], dato);
+                    if (band) {
+                        result.insertar(matriz[i]);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    //TODO
+    //agregar más tipos de datos
+    private Boolean buscarPosicion(Object datoMatriz, Object busqueda) {
+        if (Utilidades.isNumber(busqueda.getClass())) {
+            if ((((Number) datoMatriz)).doubleValue() == (((Number) busqueda)).doubleValue()) {
+                return true;
+            }
+        } else if (Utilidades.isString(busqueda.getClass())){
+            //al principio, final o si lo contiene
+            if(datoMatriz.toString().toLowerCase().startsWith(busqueda.toString().toLowerCase())
+                || datoMatriz.toString().toLowerCase().endsWith(busqueda.toString().toLowerCase())
+                || datoMatriz.toString().toLowerCase().equalsIgnoreCase(busqueda.toString().toLowerCase())
+                || datoMatriz.toString().toLowerCase().contains(busqueda.toString().toLowerCase())) {
+                return true;
+            }
+            
+            
+        }
+
+        return false;
+    }
     
-    
+    private Boolean evaluarBusquedaObjeto(E aux, Object dato, Class clazz, String atributo) throws AtributoException, Exception {
+        Field field = Utilidades.obtenerAtributo(clazz, atributo);
+        if (field == null) {
+            throw new AtributoException();
+        } else {
+            field.setAccessible(true);
+            Object a = field.get(aux);
+            return buscarPosicion(a, dato);
+        }
+
+    }
 
     public NodoLista<E> getCabecera() {
         return cabecera;

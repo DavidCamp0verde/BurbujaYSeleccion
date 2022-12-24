@@ -20,15 +20,18 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-//            ListaEnlazada<Float> lista = new ListaEnlazada<>();
-//            lista.insertar(6.22f);
-//            lista.insertar(6.23f);
-//            lista.insertar(-1f);
-//            lista.insertar(6.01f);
-//            lista.insertar(0.5f);
+//            ListaEnlazada<Integer> lista = new ListaEnlazada<>();
+//            lista.insertar(6);
+//            lista.insertar(0);
+//            lista.insertar(-1);
+//            lista.insertar(60);
+//            lista.insertar(6);
+//            lista.insertar(90);
 //            lista.imprimir();
-//            lista.order_seleccion(null, 2);
+//            //lista.order_seleccion(null, 2);
 //            lista.imprimir();
+//            System.out.println("BUSQUEDA");
+//            lista.buscar(null, 6).imprimir();
 //
 //            ListaEnlazada<String> lista1 = new ListaEnlazada<>();
 //            lista1.insertar("Soto");
@@ -36,6 +39,7 @@ public class Main {
 //            lista1.insertar("Mercurio");
 //            lista1.insertar("Granda");
 //            lista1.insertar("Intriago");
+//            lista1.buscar(null, "Soto").imprimir();
 //            lista1.imprimir();
 //            lista1.order_seleccion(null, 1);
 //            lista1.imprimir();
@@ -47,9 +51,10 @@ public class Main {
             personas.insertar(new Persona ("Lionel", "Messi"));
             personas.insertar(new Persona ("Rodolfo", "Granda"));
             personas.insertar(new Persona ("Julieta", "Zuniga"));
-            personas.imprimir();
-            personas.order_seleccion("nombres", 1);
-            personas.imprimir();
+            personas.buscar("apellidos", "ra").imprimir();
+//            personas.imprimir();
+//            personas.order_seleccion("nombres", 1);
+//            personas.imprimir();
         } catch (Exception e) {
             System.out.println(e);
         }
